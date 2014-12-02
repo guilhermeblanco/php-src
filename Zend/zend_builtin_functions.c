@@ -1264,14 +1264,17 @@ ZEND_FUNCTION(class_exists)
 			lc_name = zend_string_alloc(class_name->len, 0);
 			zend_str_tolower_copy(lc_name->val, class_name->val, class_name->len);
 		}
+
 		ce = zend_hash_find_ptr(EG(class_table), lc_name);
+
 		zend_string_free(lc_name);
 		RETURN_BOOL(ce && !((ce->ce_flags & (ZEND_ACC_INTERFACE | ZEND_ACC_TRAIT)) > ZEND_ACC_EXPLICIT_ABSTRACT_CLASS));
 	}
 
 	ce = zend_lookup_class(class_name TSRMLS_CC);
+
  	if (ce) {
- 		RETURN_BOOL((ce->ce_flags & (ZEND_ACC_INTERFACE | (ZEND_ACC_TRAIT - ZEND_ACC_EXPLICIT_ABSTRACT_CLASS))) == 0);
+ 		RETURN_BOOL((ce->ce_flags & (ZEND_ACC_INTERFACE | ZEND_ACC_TRAIT)) == 0);
 	} else {
 		RETURN_FALSE;
 	}
@@ -1350,6 +1353,7 @@ ZEND_FUNCTION(trait_exists)
 			lc_name = zend_string_alloc(trait_name->len, 0);
 			zend_str_tolower_copy(lc_name->val, trait_name->val, trait_name->len);
 		}
+
 		ce = zend_hash_find_ptr(EG(class_table), lc_name);
 		zend_string_free(lc_name);
 		RETURN_BOOL(ce && ((ce->ce_flags & ZEND_ACC_TRAIT) > ZEND_ACC_EXPLICIT_ABSTRACT_CLASS));
@@ -1697,7 +1701,7 @@ ZEND_FUNCTION(get_declared_traits)
    Returns an array of all declared classes. */
 ZEND_FUNCTION(get_declared_classes)
 {
-	uint32_t mask = ZEND_ACC_INTERFACE | (ZEND_ACC_TRAIT & ~ZEND_ACC_EXPLICIT_ABSTRACT_CLASS);
+	uint32_t mask = ZEND_ACC_INTERFACE | ZEND_ACC_TRAIT;
 	uint32_t comply = 0;
 
 	if (zend_parse_parameters_none() == FAILURE) {

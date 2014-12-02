@@ -1173,7 +1173,7 @@ static int ZEND_FASTCALL  ZEND_ADD_TRAIT_SPEC_HANDLER(ZEND_OPCODE_HANDLER_ARGS)
 			CHECK_EXCEPTION();
 			ZEND_VM_NEXT_OPCODE();
 		}
-		if (!((trait->ce_flags & ZEND_ACC_TRAIT) == ZEND_ACC_TRAIT)) {
+		if (!(trait->ce_flags & ZEND_ACC_TRAIT)) {
 			zend_error_noreturn(E_ERROR, "%s cannot use %s - it is not a trait", ce->name->val, trait->name->val);
 		}
 		CACHE_PTR(Z_CACHE_SLOT_P(opline->op2.zv), trait);
@@ -2745,7 +2745,7 @@ static int ZEND_FASTCALL  ZEND_NEW_SPEC_CONST_HANDLER(ZEND_OPCODE_HANDLER_ARGS)
 	if (UNEXPECTED((ce->ce_flags & (ZEND_ACC_INTERFACE|ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS)) != 0)) {
 		if (ce->ce_flags & ZEND_ACC_INTERFACE) {
 			zend_error_noreturn(E_ERROR, "Cannot instantiate interface %s", ce->name->val);
-		} else if ((ce->ce_flags & ZEND_ACC_TRAIT) == ZEND_ACC_TRAIT) {
+		} else if (ce->ce_flags & ZEND_ACC_TRAIT) {
 			zend_error_noreturn(E_ERROR, "Cannot instantiate trait %s", ce->name->val);
 		} else {
 			zend_error_noreturn(E_ERROR, "Cannot instantiate abstract class %s", ce->name->val);
@@ -16700,10 +16700,10 @@ static int ZEND_FASTCALL  ZEND_NEW_SPEC_VAR_HANDLER(ZEND_OPCODE_HANDLER_ARGS)
 	} else {
 		ce = Z_CE_P(EX_VAR(opline->op1.var));
 	}
-	if (UNEXPECTED((ce->ce_flags & (ZEND_ACC_INTERFACE|ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS)) != 0)) {
+	if (UNEXPECTED((ce->ce_flags & (ZEND_ACC_INTERFACE|ZEND_ACC_TRAIT|ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS)) != 0)) {
 		if (ce->ce_flags & ZEND_ACC_INTERFACE) {
 			zend_error_noreturn(E_ERROR, "Cannot instantiate interface %s", ce->name->val);
-		} else if ((ce->ce_flags & ZEND_ACC_TRAIT) == ZEND_ACC_TRAIT) {
+		} else if (ce->ce_flags & ZEND_ACC_TRAIT) {
 			zend_error_noreturn(E_ERROR, "Cannot instantiate trait %s", ce->name->val);
 		} else {
 			zend_error_noreturn(E_ERROR, "Cannot instantiate abstract class %s", ce->name->val);

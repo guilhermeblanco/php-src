@@ -161,8 +161,8 @@ typedef struct _zend_try_catch_element {
 /* ZEND_ACC_EXPLICIT_ABSTRACT_CLASS denotes that a class was explicitly defined as abstract by using the keyword. */
 #define ZEND_ACC_IMPLICIT_ABSTRACT_CLASS	0x10
 #define ZEND_ACC_EXPLICIT_ABSTRACT_CLASS	0x20
-#define ZEND_ACC_INTERFACE		            0x80
-#define ZEND_ACC_TRAIT						0x120
+#define ZEND_ACC_INTERFACE		            0x40
+#define ZEND_ACC_TRAIT						0x80
 
 /* method flags (visibility) */
 /* The order of those must be kept - public < protected < private */
@@ -222,7 +222,7 @@ typedef struct _zend_try_catch_element {
 /* internal function is allocated at arena */
 #define ZEND_ACC_ARENA_ALLOCATED		0x20000000
 
-#define ZEND_CE_IS_TRAIT(ce) (((ce)->ce_flags & ZEND_ACC_TRAIT) == ZEND_ACC_TRAIT)
+#define ZEND_CE_IS_TRAIT(ce) ((ce)->ce_flags & ZEND_ACC_TRAIT)
 
 char *zend_visibility_string(uint32_t fn_flags);
 
