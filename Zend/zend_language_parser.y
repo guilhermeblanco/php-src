@@ -449,6 +449,7 @@ class_modifier:
 		T_ABSTRACT 		{ $$ = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS; }
 	|	T_FINAL 		{ $$ = ZEND_ACC_FINAL; }
 	|	T_PUBLIC 		{ $$ = ZEND_ACC_PUBLIC; }
+	|	T_PRIVATE 		{ $$ = ZEND_ACC_PRIVATE; }
 ;
 
 trait_declaration_statement:
@@ -465,6 +466,7 @@ trait_declaration_statement:
 
 trait_modifier:
 		T_PUBLIC 		{ $$ = ZEND_ACC_PUBLIC; }
+	|	T_PRIVATE 		{ $$ = ZEND_ACC_PRIVATE; }
 ;
 
 interface_declaration_statement:
@@ -481,6 +483,7 @@ interface_declaration_statement:
 
 interface_modifier:
 		T_PUBLIC 		{ $$ = ZEND_ACC_PUBLIC; }
+	|	T_PRIVATE 		{ $$ = ZEND_ACC_PRIVATE; }
 ;
 
 extends_from:
