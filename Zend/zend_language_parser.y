@@ -258,7 +258,7 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
 
 %type <num> returns_ref function is_reference is_variadic variable_modifiers
 %type <num> method_modifiers trait_modifiers non_empty_member_modifiers member_modifier
-%type <num> class_modifiers class_modifier
+%type <num> class_modifiers class_modifier trait_modifier interface_modifier
 
 %type <str> backup_doc_comment
 
@@ -431,10 +431,13 @@ is_variadic:
 class_declaration_statement:
 		class_modifiers T_CLASS { $<num>$ = CG(zend_lineno); }
 		T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
-			{ $$ = zend_ast_create_decl(ZEND_AST_CLASS, $1, $<num>3, $7, zend_ast_get_str($4), $5, $6, $9); }
+			{
+				if (!($1 & ZEND_ACC_PPP_MASK)) { $1 |= ZEND_ACC_PUBLIC; }
+				$$ = zend_ast_create_decl(ZEND_AST_CLASS, $1, $<num>3, $7, zend_ast_get_str($4), $5, $6, $9); 
+			}
 	|	T_CLASS { $<num>$ = CG(zend_lineno); }
 		T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
-			{ $$ = zend_ast_create_decl(ZEND_AST_CLASS, 0, $<num>2, $6, zend_ast_get_str($3), $4, $5, $8); }
+			{ $$ = zend_ast_create_decl(ZEND_AST_CLASS, ZEND_ACC_PUBLIC, $<num>2, $6, zend_ast_get_str($3), $4, $5, $8); }
 ;
 
 class_modifiers:
@@ -445,18 +448,39 @@ class_modifiers:
 class_modifier:
 		T_ABSTRACT 		{ $$ = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS; }
 	|	T_FINAL 		{ $$ = ZEND_ACC_FINAL; }
+	|	T_PUBLIC 		{ $$ = ZEND_ACC_PUBLIC; }
 ;
 
 trait_declaration_statement:
-		T_TRAIT { $<num>$ = CG(zend_lineno); }
+		trait_modifier T_TRAIT { $<num>$ = CG(zend_lineno); }
 		T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
-			{ $$ = zend_ast_create_decl(ZEND_AST_CLASS, ZEND_ACC_TRAIT, $<num>2, $6, zend_ast_get_str($3), $4, $5, $8); }
+			{
+				if (!($1 & ZEND_ACC_PPP_MASK)) { $1 |= ZEND_ACC_PUBLIC; } 
+				$$ = zend_ast_create_decl(ZEND_AST_CLASS, zend_add_class_modifier($1, ZEND_ACC_TRAIT), $<num>3, $7, zend_ast_get_str($4), $5, $6, $9); 
+			}
+	|	T_TRAIT { $<num>$ = CG(zend_lineno); }
+		T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
+			{ $$ = zend_ast_create_decl(ZEND_AST_CLASS, ZEND_ACC_TRAIT | ZEND_ACC_PUBLIC, $<num>2, $6, zend_ast_get_str($3), $4, $5, $8); }
+;
+
+trait_modifier:
+		T_PUBLIC 		{ $$ = ZEND_ACC_PUBLIC; }
 ;
 
 interface_declaration_statement:
-		T_INTERFACE { $<num>$ = CG(zend_lineno); }
+		interface_modifier T_INTERFACE { $<num>$ = CG(zend_lineno); }
 		T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}'
-			{ $$ = zend_ast_create_decl(ZEND_AST_CLASS, ZEND_ACC_INTERFACE, $<num>2, $5, zend_ast_get_str($3), NULL, $4, $7); }
+			{ 
+				if (!($1 & ZEND_ACC_PPP_MASK)) { $1 |= ZEND_ACC_PUBLIC; } 
+				$$ = zend_ast_create_decl(ZEND_AST_CLASS, zend_add_class_modifier($1, ZEND_ACC_INTERFACE), $<num>3, $6, zend_ast_get_str($4), NULL, $5, $8); 
+			}
+	|	T_INTERFACE { $<num>$ = CG(zend_lineno); }
+		T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}'
+			{ $$ = zend_ast_create_decl(ZEND_AST_CLASS, ZEND_ACC_INTERFACE | ZEND_ACC_PUBLIC, $<num>2, $5, zend_ast_get_str($3), NULL, $4, $7); }
+;
+
+interface_modifier:
+		T_PUBLIC 		{ $$ = ZEND_ACC_PUBLIC; }
 ;
 
 extends_from:

@@ -52,17 +52,23 @@ dump_methodModifierNames('y');
 ==DONE==
 --EXPECT--
 string(1) "a"
-array(0) {
+array(1) {
+  [0]=>
+  string(6) "public"
 }
 string(1) "b"
-array(1) {
+array(2) {
   [0]=>
   string(8) "abstract"
+  [1]=>
+  string(6) "public"
 }
 string(1) "c"
-array(1) {
+array(2) {
   [0]=>
   string(5) "final"
+  [1]=>
+  string(6) "public"
 }
 string(14) "x::__construct"
 array(1) {

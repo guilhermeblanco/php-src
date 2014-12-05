@@ -28,10 +28,10 @@ dump_modifiers('g');
 
 ?>
 --EXPECT--
-int(0)
-int(32)
-int(4)
-int(64)
-int(524288)
-int(524352)
-int(0)
+int(256)
+int(288)
+int(260)
+int(320)
+int(524544)
+int(524608)
+int(256)
